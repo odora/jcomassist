@@ -1,0 +1,240 @@
+package cn.simple.jcom.assist;
+
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.*;
+
+import com.jgoodies.forms.layout.*;
+
+/*
+ * Created by JFormDesigner on Sat Jul 27 00:00:04 CST 2019
+ */
+
+
+
+/**
+ * @author CodeCracker
+ */
+@SuppressWarnings({"serial"})
+public class MainFrame extends JFrame {
+	public MainFrame() {
+		initComponents();
+		initActions();
+	}
+
+	/**
+	 * 打开串口前先检查下参数
+	 * 
+	 * @return
+	 */
+	private boolean checkInput() {
+		return false;
+	}
+
+	/**
+	 * 绑定按钮事件
+	 */
+	private void initActions() {
+		ComboBoxModel model = jCtlRate.getModel();
+		model.setSelectedItem(model.getElementAt(9));
+		model = jCtlDigitBit.getModel();// 数据位:5
+		model.setSelectedItem(model.getElementAt(3));
+		jBtnOpenOrClose.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				System.out.println("open port clicked");
+				if (!checkInput()) {
+					return;
+				}
+			}
+		});
+	}
+
+	/**
+	 * 初始化页面上的组件
+	 */
+	private void initComponents() {
+		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
+		panel1 = new JPanel();
+		panel2 = new JPanel();
+		label1 = new JLabel();
+		jCtlSerialPort = new JComboBox(Objects.listPorts());
+		label2 = new JLabel();
+		jCtlRate = new JComboBox(Objects.listRates());
+		label3 = new JLabel();
+		jCtlCheckBit = new JComboBox(Objects.listCheckBits());
+		label4 = new JLabel();
+		jCtlDigitBit = new JComboBox(Objects.listDigitBit());
+		label5 = new JLabel();
+		jCtlStopBit = new JComboBox(Objects.listStopBit());
+		label6 = new JLabel();
+		jBtnOpenOrClose = new JButton();
+		separator1 = new JSeparator();
+		panel3 = new JPanel();
+		jBtnClearOut = new JButton();
+		jBtnStopOut = new JButton();
+		jCtlAutoClear = new JCheckBox();
+		jCtlHexOut = new JCheckBox();
+		panel4 = new JPanel();
+		jBtnSaveOut = new JButton();
+		jBtnChangeDir = new JButton();
+		jCtlPath = new JTextField();
+		panel5 = new JPanel();
+		label7 = new JLabel();
+		jCtlSaveInterval = new JTextField();
+		scrollPane1 = new JScrollPane();
+		jCtlOutput = new JTextPane();
+
+		//======== this ========
+		Container contentPane = getContentPane();
+		contentPane.setLayout(new BorderLayout());
+
+		//======== panel1 ========
+		{
+			panel1.setLayout(new FormLayout(
+				"default",
+				"4*($lgap, default)"));
+
+			//======== panel2 ========
+			{
+				panel2.setLayout(new FormLayout(
+					"$lcgap, default, $lcgap, default:grow, $lcgap",
+					"6*(default, $lgap), 2*($lgap)"));
+
+				//---- label1 ----
+				label1.setText("串口");
+				panel2.add(label1, CC.xy(2, 1));
+				panel2.add(jCtlSerialPort, CC.xy(4, 1));
+
+				//---- label2 ----
+				label2.setText("波特率");
+				panel2.add(label2, CC.xy(2, 3));
+				panel2.add(jCtlRate, CC.xy(4, 3));
+
+				//---- label3 ----
+				label3.setText("校验位");
+				panel2.add(label3, CC.xy(2, 5));
+				panel2.add(jCtlCheckBit, CC.xy(4, 5));
+
+				//---- label4 ----
+				label4.setText("数据位");
+				panel2.add(label4, CC.xy(2, 7));
+				panel2.add(jCtlDigitBit, CC.xy(4, 7));
+
+				//---- label5 ----
+				label5.setText("停止位");
+				panel2.add(label5, CC.xy(2, 9));
+				panel2.add(jCtlStopBit, CC.xy(4, 9));
+
+				//---- label6 ----
+				label6.setText("\u25cf");
+				panel2.add(label6, CC.xy(2, 11));
+
+				//---- jBtnClose ----
+				jBtnOpenOrClose.setText("打开串口");
+				panel2.add(jBtnOpenOrClose, CC.xy(4, 11));
+				panel2.add(separator1, CC.xywh(2, 13, 3, 1));
+			}
+			panel1.add(panel2, CC.xy(1, 2));
+
+			//======== panel3 ========
+			{
+				panel3.setLayout(new FormLayout(
+					"2*($lcgap, default), $lcgap",
+					"2*(default, $lgap), default"));
+
+				//---- jBtnClearOut ----
+				jBtnClearOut.setText("清空接收区");
+				panel3.add(jBtnClearOut, CC.xy(2, 1));
+
+				//---- jBtnStopOut ----
+				jBtnStopOut.setText("停止显示");
+				panel3.add(jBtnStopOut, CC.xy(4, 1));
+
+				//---- jCtlAutoClear ----
+				jCtlAutoClear.setText("自动清空");
+				panel3.add(jCtlAutoClear, CC.xywh(2, 3, 3, 1));
+
+				//---- jCtlHexOut ----
+				jCtlHexOut.setText("16进制显示");
+				jCtlHexOut.setSelected(true);
+				panel3.add(jCtlHexOut, CC.xywh(2, 5, 3, 1));
+			}
+			panel1.add(panel3, CC.xy(1, 4));
+
+			//======== panel4 ========
+			{
+				panel4.setLayout(new FormLayout(
+					"$lcgap, default, $lcgap, default:grow, $lcgap",
+					"default, $lgap, default"));
+
+				//---- jBtnSaveOut ----
+				jBtnSaveOut.setText("保存显示数据");
+				panel4.add(jBtnSaveOut, CC.xy(2, 1));
+
+				//---- jBtnChangeDir ----
+				jBtnChangeDir.setText("更改");
+				panel4.add(jBtnChangeDir, CC.xy(4, 1));
+				panel4.add(jCtlPath, CC.xywh(2, 3, 3, 1));
+			}
+			panel1.add(panel4, CC.xy(1, 6));
+
+			//======== panel5 ========
+			{
+				panel5.setLayout(new FormLayout(
+					"$lcgap, default, $lcgap, default:grow, $lcgap",
+					"default"));
+
+				//---- label7 ----
+				label7.setText("保存时间(MS)");
+				panel5.add(label7, CC.xy(2, 1));
+				panel5.add(jCtlSaveInterval, CC.xy(4, 1));
+			}
+			panel1.add(panel5, CC.xy(1, 8));
+		}
+		contentPane.add(panel1, BorderLayout.WEST);
+
+		//======== scrollPane1 ========
+		{
+			scrollPane1.setViewportView(jCtlOutput);
+		}
+		contentPane.add(scrollPane1, BorderLayout.CENTER);
+		pack();
+		setLocationRelativeTo(getOwner());
+		// JFormDesigner - End of component initialization  //GEN-END:initComponents
+	}
+
+	// JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
+	private JPanel panel1;
+	private JPanel panel2;
+	private JLabel label1;
+	private JComboBox jCtlSerialPort;
+	private JLabel label2;
+	private JComboBox jCtlRate;
+	private JLabel label3;
+	private JComboBox jCtlCheckBit;
+	private JLabel label4;
+	private JComboBox jCtlDigitBit;
+	private JLabel label5;
+	private JComboBox jCtlStopBit;
+	private JLabel label6;
+	private JButton jBtnOpenOrClose;
+	private JSeparator separator1;
+	private JPanel panel3;
+	private JButton jBtnClearOut;
+	private JButton jBtnStopOut;
+	private JCheckBox jCtlAutoClear;
+	private JCheckBox jCtlHexOut;
+	private JPanel panel4;
+	private JButton jBtnSaveOut;
+	private JButton jBtnChangeDir;
+	private JTextField jCtlPath;
+	private JPanel panel5;
+	private JLabel label7;
+	private JTextField jCtlSaveInterval;
+	private JScrollPane scrollPane1;
+	private JTextPane jCtlOutput;
+	// JFormDesigner - End of variables declaration  //GEN-END:variables
+}

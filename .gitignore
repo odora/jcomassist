@@ -1,0 +1,15 @@
+*.project
+*.settings
+*.classpath
+*.iml
+.idea/
+target/
+build/*.war
+WAR/*
+.vscode/*
+node_modules/
+dist/
+.umi/
+.temp/
+CATALINA_HOME_IS_UNDEFINED/
+
