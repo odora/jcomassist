@@ -3,6 +3,7 @@ package cn.simple.jcom.assist;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -28,10 +29,18 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 	private InputStream inputStream = null;
 	// 上次收到数据的时间戳
 	private long lastTimestamp = 0;
+	// 字符缓冲区内容用于写xml文件
+	private StringBuffer buffer = new StringBuffer(1024);
+	// 窗体是否关闭的标志
+	private boolean isClosing = false;
 
 	public MainFrame() {
 		initComponents();
 		initActions();
+		// ----------------------------------------
+		// 窗体自己处理关闭事件处理串口的关闭
+		// ----------------------------------------
+		enableEvents(AWTEvent.WINDOW_EVENT_MASK);
 	}
 
 	/**
@@ -50,10 +59,17 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 				// ----------------------------------------
 				String delta = jCtlSaveInterval.getText();
 				int interval = delta.isEmpty() ? 100 : Integer.parseInt(delta);
-				if (timestamp - lastTimestamp >= interval) {
+				if (lastTimestamp != 0 && timestamp - lastTimestamp >= interval) {
 					System.out.println("insert to xml file now " + timestamp);
 					String path = jCtlPath.getText();
+					if (path != null && !path.isEmpty()) {
+						Objects.saveLine2Xml(path, buffer.toString());
+						buffer.setLength(0);// 清空缓存下次再写入
+					}
 				}
+
+				// 将当前字符串加入到缓冲区
+				buffer.append(new String(bytes));
 
 				// 这里设置当前获取数据结束时间为上次获取数据的时间戳
 				this.lastTimestamp = timestamp;
@@ -76,6 +92,11 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 			Objects.errorBox(this, "【保存时间】必须为数字");
 			return false;
 		}
+		val = jCtlPath.getText();
+		if (val.isEmpty()) {
+			Objects.errorBox(this, "请选择【保存路径】");
+			return false;
+		}
 
 		return true;
 	}
@@ -91,11 +112,15 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 		model.setSelectedItem(model.getElementAt(3));
 		jCtlPath.setEnabled(false);// 用文件对话框选择
 
+		// ----------------------------------------
 		// 界面按钮事件监听
+		// ----------------------------------------
+
+		// 打开/关闭 串口 按钮
 		jBtnOpenOrClose.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("open port clicked");
+				System.out.println("open/close port clicked");
 				if (!checkInput()) {
 					return;
 				}
@@ -132,6 +157,7 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 			}
 		});
 
+		// 改变文件保存路径按钮
 		jBtnChangeDir.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -139,6 +165,18 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 				String path = Objects.choosePath();
 				if (path != null) {
 					jCtlPath.setText(path);
+				}
+			}
+		});
+
+		// 保存所有的输出到XML文件
+		jBtnSaveOut.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String path = jCtlPath.getText();
+				if (path != null && !path.isEmpty()) {
+					Objects.saveLine2Xml(path, buffer.toString());
+					buffer.setLength(0);
 				}
 			}
 		});
@@ -163,6 +201,46 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 		object.setParity(parity);
 		// 返回对象
 		return object;
+	}
+
+	/**
+	 * 点击关闭按钮时做些清理工作
+	 */
+	@Override
+	protected void processWindowEvent(final WindowEvent pEvent) {
+		if (pEvent.getID() == WindowEvent.WINDOW_CLOSING) {
+			if (!isClosing) {
+				isClosing = true;
+			} else {
+				return;
+			}
+
+			try {
+				if (inputStream != null) {
+					inputStream.close();
+				}
+				if (sport != null) {
+					sport.close();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			// 将缓冲区的所有字符都写入文件
+			if (buffer.length() > 0) {
+				String path = jCtlPath.getText();
+				if (path != null && !path.isEmpty()) {
+					Objects.saveLine2Xml(path, buffer.toString());
+					buffer.setLength(0);
+				}
+			}
+
+			// wait all writer finish
+			Objects.pool.shutdown();
+			System.exit(0);
+		} else {
+			super.processWindowEvent(pEvent);
+		}
 	}
 
 	/**

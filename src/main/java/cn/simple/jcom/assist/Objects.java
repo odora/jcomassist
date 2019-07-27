@@ -9,6 +9,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.TooManyListenersException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.comm.CommPort;
 import javax.comm.CommPortIdentifier;
@@ -32,6 +34,9 @@ import javax.swing.text.Document;
  */
 @SuppressWarnings({ "rawtypes" })
 public class Objects {
+	// 线程池用来进行文件写入操作的互斥
+	public static final ExecutorService pool = Executors.newSingleThreadExecutor();
+
 	/**
 	 * 获取本机所有串口
 	 * 
@@ -322,6 +327,7 @@ public class Objects {
 	 * @param text
 	 */
 	public static void saveLine2Xml(String path, String text) {
-		
+		File file = new File(path, "LiveData.xml");
+		pool.submit(new XmlWriter(file, text));
 	}
 }
