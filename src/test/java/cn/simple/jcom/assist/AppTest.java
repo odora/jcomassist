@@ -1,4 +1,4 @@
-package cn.simple.jj2k;
+package cn.simple.jcom.assist;
 
 import static org.junit.Assert.assertTrue;
 

@@ -78,6 +78,22 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 	}
 
 	/**
+	 * 启用和禁用输入项编辑。打开端口后部分项目不能编辑
+	 * 
+	 * @param enable
+	 */
+	private void enableInput(boolean enable) {
+		jCtlCheckBit.setEnabled(enable);
+		jCtlDigitBit.setEnabled(enable);
+		jCtlPath.setEnabled(enable);
+		jCtlRate.setEditable(enable);
+		jCtlSaveInterval.setEnabled(enable);
+		jCtlSerialPort.setEnabled(enable);
+		jCtlStopBit.setEnabled(enable);
+		jBtnChangeDir.setEnabled(enable);
+	}
+
+	/**
 	 * 打开串口前先检查下输入项
 	 * 
 	 * @return
@@ -88,7 +104,7 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 		if (val.isEmpty()) {
 			Objects.errorBox(this, "请输入【保存时间】");
 			return false;
-		} else if (val.matches("[^0-9]")) {
+		} else if (!val.matches("^[1-9][0-9]*$")) {
 			Objects.errorBox(this, "【保存时间】必须为数字");
 			return false;
 		}
@@ -131,12 +147,13 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 					if (inputStream != null) {
 						try {
 							inputStream.close();
-							jBtnOpenOrClose.setText("打开串口");
 						} catch (IOException ioe) {
 						}
 					}
 					sport.close();
 					sport = null;
+					jBtnOpenOrClose.setText("打开串口");
+					enableInput(true);
 				}
 				// 本次是打开
 				else {
@@ -149,6 +166,7 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 						inputStream = sport.getInputStream();
 						Objects.addListener(sport, MainFrame.this);
 						jBtnOpenOrClose.setText("关闭串口");
+						enableInput(true);
 					} catch (Exception ex) {
 						ex.printStackTrace();
 						sport.close();
@@ -346,7 +364,6 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 
 				// ---- jCtlHexOut ----
 				jCtlHexOut.setText("16进制显示");
-				jCtlHexOut.setSelected(true);
 				panel3.add(jCtlHexOut, CC.xywh(2, 5, 3, 1));
 			}
 			panel1.add(panel3, CC.xy(1, 4));
