@@ -14,14 +14,21 @@ public class SimpleRead implements Runnable, SerialPortEventListener {
 	SerialPort serialPort;
 	Thread readThread;
 
+	/**
+	 * 打开串口
+	 */
+	public static void open(CommPortIdentifier portId) {
+		SimpleRead.portId = portId;
+		SimpleRead reader = new SimpleRead();
+	}
+
 	public static void main(String[] args) {
 		portList = CommPortIdentifier.getPortIdentifiers();
 
 		while (portList.hasMoreElements()) {
 			portId = (CommPortIdentifier) portList.nextElement();
 			if (portId.getPortType() == CommPortIdentifier.PORT_SERIAL) {
-				// if (portId.getName().equals("COM1")) {
-				if (portId.getName().equals("/dev/term/a")) {
+				if (portId.getName().equals("COM2")) {
 					SimpleRead reader = new SimpleRead();
 				}
 			}
@@ -42,6 +49,7 @@ public class SimpleRead implements Runnable, SerialPortEventListener {
 		try {
 			serialPort.addEventListener(this);
 		} catch (TooManyListenersException e) {
+			e.printStackTrace();
 		}
 		serialPort.notifyOnDataAvailable(true);
 		try {
@@ -51,7 +59,8 @@ public class SimpleRead implements Runnable, SerialPortEventListener {
 			e.printStackTrace();
 		}
 		readThread = new Thread(this);
-		readThread.start();
+		//readThread.start();
+//		readThread.run();
 	}
 
 	public void run() {
