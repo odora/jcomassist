@@ -4,8 +4,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Properties;
 
 import javax.comm.SerialPort;
 import javax.comm.SerialPortEvent;
@@ -37,6 +39,7 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 	public MainFrame() {
 		initComponents();
 		initActions();
+		initConfig();
 		// ----------------------------------------
 		// 窗体自己处理关闭事件处理串口的关闭
 		// ----------------------------------------
@@ -86,11 +89,13 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 		jCtlCheckBit.setEnabled(enable);
 		jCtlDigitBit.setEnabled(enable);
 		jCtlPath.setEnabled(enable);
-		jCtlRate.setEditable(enable);
+		jCtlRate.setEnabled(enable);
 		jCtlSaveInterval.setEnabled(enable);
 		jCtlSerialPort.setEnabled(enable);
 		jCtlStopBit.setEnabled(enable);
+		jCtlKeyword.setEnabled(enable);
 		jBtnChangeDir.setEnabled(enable);
+		jBtnSaveKeyword.setEnabled(enable);
 	}
 
 	/**
@@ -198,6 +203,36 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 				}
 			}
 		});
+
+		// 保存关键字按钮
+		jBtnSaveKeyword.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String xmlfile = jCtlPath.getText();
+				String keyword = jCtlKeyword.getText();
+				if (xmlfile.isEmpty() || !new File(xmlfile).exists()) {
+					Objects.errorBox(MainFrame.this, "请选择【保存路径】");
+					return;
+				}
+				if (keyword.isEmpty() || keyword.matches("^[A-Z]+(,[A-Z]+)*$")) {
+					Objects.errorBox(MainFrame.this, "请填写【关键字】");
+					return;
+				}
+				Properties props = new Properties();
+				props.put("xmlfile", xmlfile);
+				props.put("keyword", keyword);
+				Objects.saveConfig(props);
+			}
+		});
+	}
+
+	/**
+	 * 对配置进行持久化
+	 */
+	private void initConfig() {
+		Properties props = Objects.readConfig();
+		jCtlPath.setText(props.get("xmlfile").toString());
+		jCtlKeyword.setText(props.get("keyword").toString());
 	}
 
 	private SerialPortObject makePortParams() {
@@ -294,6 +329,8 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 		panel5 = new JPanel();
 		label7 = new JLabel();
 		jCtlSaveInterval = new JTextField("100");
+		jBtnSaveKeyword = new JButton();
+		jCtlKeyword = new JTextField();
 		scrollPane1 = new JScrollPane();
 		jCtlOutput = new JTextPane();
 
@@ -378,7 +415,7 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 				panel4.add(jBtnSaveOut, CC.xy(2, 1));
 
 				// ---- jBtnChangeDir ----
-				jBtnChangeDir.setText("更改");
+				jBtnChangeDir.setText("指定保存路径");
 				panel4.add(jBtnChangeDir, CC.xy(4, 1));
 				panel4.add(jCtlPath, CC.xywh(2, 3, 3, 1));
 			}
@@ -386,12 +423,18 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 
 			// ======== panel5 ========
 			{
-				panel5.setLayout(new FormLayout("$lcgap, default, $lcgap, default:grow, $lcgap", "default"));
+				panel5.setLayout(new FormLayout("$lcgap, default, $lcgap, default:grow, $lcgap",
+						"default, $lgap, default"));
 
 				// ---- label7 ----
-				label7.setText("保存时间(MS)");
+				label7.setText("保存时间");
 				panel5.add(label7, CC.xy(2, 1));
 				panel5.add(jCtlSaveInterval, CC.xy(4, 1));
+
+				// ---- jBtnSaveKeyword ----
+				jBtnSaveKeyword.setText("保存关键字");
+				panel5.add(jBtnSaveKeyword, CC.xy(2, 3));
+				panel5.add(jCtlKeyword, CC.xy(4, 3));
 			}
 			panel1.add(panel5, CC.xy(1, 8));
 		}
@@ -437,7 +480,10 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 	private JPanel panel5;
 	private JLabel label7;
 	private JTextField jCtlSaveInterval;
+	private JButton jBtnSaveKeyword;
+	private JTextField jCtlKeyword;
 	private JScrollPane scrollPane1;
+
 	private JTextPane jCtlOutput;
 	// JFormDesigner - End of variables declaration //GEN-END:variables
 }

@@ -3,11 +3,14 @@ package cn.simple.jcom.assist;
 import java.awt.Component;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Properties;
 import java.util.TooManyListenersException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -329,5 +332,74 @@ public class Objects {
 	public static void saveLine2Xml(String path, String text) {
 		File file = new File(path, "LiveData.xml");
 		pool.submit(new XmlWriter(file, text));
+	}
+
+	/**
+	 * 读取配置文件
+	 * 
+	 * @return
+	 */
+	public static Properties readConfig() {
+		Properties props = new Properties();
+		String path = System.getProperty("user.home");
+		File file = new File(path, "_jcomassist");
+		FileInputStream fis = null;
+
+		// 如果文件存在则读取否则写入默认值
+		if (file.exists()) {
+			try {
+				fis = new FileInputStream(file);
+				props.load(fis);
+				return props;
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				if (fis != null) {
+					try {
+						fis.close();
+					} catch (IOException e1) {
+					}
+				}
+			}
+		}
+
+		// 如果不存在配置文件或者数据不完备则写入默认值
+		if (!file.exists() || !props.contains("xmlfile") || !props.contains("keyword")) {
+			String keys = "COV,OVB,OVR,RRQ,RRR,BTN,BTS,FTN,FTS,B1N,B1S,B1B,B2N,B2S,B2B,F1N,F1S,LWK,DLT,DLP";
+			if (!props.contains("xmlfile")) {
+				props.put("xmlfile", path);
+			}
+			if (!props.contains("keyword")) {
+				// 共20个指标用逗号分隔存储到配置文件
+				props.put("keyword", keys);
+			}
+			saveConfig(props);
+		}
+
+		return props;
+	}
+
+	/**
+	 * 保存配置文件
+	 * 
+	 * @param props
+	 */
+	public static void saveConfig(Properties props) {
+		String path = System.getProperty("user.home");
+		File file = new File(path, "_jcomassist");
+		FileOutputStream fos = null;
+		try {
+			fos = new FileOutputStream(file);
+			props.store(fos, null);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (fos != null) {
+				try {
+					fos.close();
+				} catch (IOException e1) {
+				}
+			}
+		}
 	}
 }
