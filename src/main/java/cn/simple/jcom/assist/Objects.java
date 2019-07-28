@@ -17,6 +17,7 @@ import java.util.Properties;
 import java.util.TooManyListenersException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.regex.Pattern;
 
 import javax.comm.CommPort;
 import javax.comm.CommPortIdentifier;
@@ -45,7 +46,7 @@ public class Objects {
 	// 线程池用来进行文件写入操作的互斥
 	public static final ExecutorService pool = Executors.newSingleThreadExecutor();
 	// 这里是线程不安全的对象,但是本例中不需要线程安全。不会产生并发执行的可能
-	private static final SimpleDateFormat sdf = new SimpleDateFormat("MMdd HH:mm:ss.SSS");
+	private static final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
 
 	/**
 	 * 获取本机所有串口
@@ -351,9 +352,9 @@ public class Objects {
 	 * @param path
 	 * @param text
 	 */
-	public static void saveLine2Xml(String path, String text) {
+	public static void saveLine2Xml(String path, String text, Pattern keys) {
 		File file = new File(path, "LiveData.xml");
-		pool.submit(new XmlWriter(file, text));
+		pool.submit(new XmlWriter(file, text, keys));
 	}
 
 	/**
@@ -387,7 +388,7 @@ public class Objects {
 
 		// 如果不存在配置文件或者数据不完备则写入默认值
 		if (!file.exists() || !props.contains("xmlfile") || !props.contains("keyword")) {
-			String keys = "COV,OVB,OVR,RRQ,RRR,BTN,BTS,FTN,FTS,B1N,B1S,B1B,B2N,B2S,B2B,F1N,F1S,LWK,DLT,DLP";
+			String keys = "COV|OVB|OVR|RRQ|RRR|BTN|BTS|FTN|FTS|B1N|B1S|B1B|B2N|B2S|B2B|F1N|F1S|LWK|DLT|DLP";
 			if (!props.contains("xmlfile")) {
 				props.put("xmlfile", path);
 			}

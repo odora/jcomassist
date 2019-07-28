@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.regex.Pattern;
 
 import javax.comm.SerialPort;
 import javax.comm.SerialPortEvent;
@@ -36,6 +37,8 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 	private StringBuffer buffer = new StringBuffer(1024);
 	// 窗体是否关闭的标志
 	private boolean isClosing = false;
+	// 关键字正则表达式
+	private Pattern regex = null;
 
 	public MainFrame() {
 		initComponents();
@@ -68,7 +71,7 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 					System.out.println("insert to xml file now " + timestamp);
 					String path = jCtlPath.getText();
 					if (path != null && !path.isEmpty()) {
-						Objects.saveLine2Xml(path, buffer.toString());
+						Objects.saveLine2Xml(path, buffer.toString(), regex);
 						buffer.setLength(0);// 清空缓存下次再写入
 					}
 				}
@@ -134,6 +137,7 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 		model = jCtlDigitBit.getModel();// 数据位:5
 		model.setSelectedItem(model.getElementAt(3));
 		jCtlPath.setEnabled(false);// 用文件对话框选择
+		jCtlOutput.setEditable(false);// 只是输出不能编辑
 
 		// ----------------------------------------
 		// 界面按钮事件监听
@@ -200,7 +204,7 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 			public void actionPerformed(ActionEvent e) {
 				String path = jCtlPath.getText();
 				if (path != null && !path.isEmpty()) {
-					Objects.saveLine2Xml(path, buffer.toString());
+					Objects.saveLine2Xml(path, buffer.toString(), regex);
 					buffer.setLength(0);
 				}
 			}
@@ -216,7 +220,7 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 					Objects.errorBox(MainFrame.this, "请选择【保存路径】");
 					return;
 				}
-				if (keyword.isEmpty() || keyword.matches("^[0-9A-Z]+(,[0-9A-Z]+)*$")) {
+				if (keyword.isEmpty() || keyword.matches("^[0-9A-Z]{3}+(\\|[0-9A-Z]{3})*$")) {
 					Objects.errorBox(MainFrame.this, "请填写【关键字】");
 					return;
 				}
@@ -224,6 +228,8 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 				props.put("xmlfile", xmlfile);
 				props.put("keyword", keyword);
 				Objects.saveConfig(props);
+				// 正则表达式缓存用于写XML文件
+				regex = Pattern.compile("(?=" + keyword + ")");
 			}
 		});
 
@@ -248,6 +254,9 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 		Properties props = Objects.readConfig();
 		jCtlPath.setText(props.get("xmlfile").toString());
 		jCtlKeyword.setText(props.get("keyword").toString());
+		if (!jCtlKeyword.getText().isEmpty()) {
+			regex = Pattern.compile("(?=" + jCtlKeyword.getText() + ")");
+		}
 	}
 
 	private SerialPortObject makePortParams() {
@@ -298,7 +307,7 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 			if (buffer.length() > 0) {
 				String path = jCtlPath.getText();
 				if (path != null && !path.isEmpty()) {
-					Objects.saveLine2Xml(path, buffer.toString());
+					Objects.saveLine2Xml(path, buffer.toString(), regex);
 					buffer.setLength(0);
 				}
 			}
