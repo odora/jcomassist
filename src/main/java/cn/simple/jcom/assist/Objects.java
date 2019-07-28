@@ -1,5 +1,6 @@
 package cn.simple.jcom.assist;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -8,7 +9,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.TooManyListenersException;
@@ -28,6 +31,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 import javax.swing.text.Document;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
 
 /**
  * 通用工具类
@@ -39,6 +44,8 @@ import javax.swing.text.Document;
 public class Objects {
 	// 线程池用来进行文件写入操作的互斥
 	public static final ExecutorService pool = Executors.newSingleThreadExecutor();
+	// 这里是线程不安全的对象,但是本例中不需要线程安全。不会产生并发执行的可能
+	private static final SimpleDateFormat sdf = new SimpleDateFormat("MMdd HH:mm:ss.SSS");
 
 	/**
 	 * 获取本机所有串口
@@ -191,13 +198,19 @@ public class Objects {
 	 * @param pane
 	 * @param text
 	 */
-	public static void addText2Pane(final JTextPane pane, final String text) {
+	public static void addText2Pane(final JTextPane pane, final String text, final Color color) {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
+				SimpleAttributeSet set = null;
 				Document doc = pane.getDocument();
 				try {
-					doc.insertString(doc.getLength(), text, null);
+					if (color != null) {
+						// 如果传递有彩色文字就设置文本属性
+						set = new SimpleAttributeSet();
+						StyleConstants.setForeground(set, color);
+					}
+					doc.insertString(doc.getLength(), text, set);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -217,15 +230,24 @@ public class Objects {
 				bytes = new byte[length];
 				in.read(bytes);
 				// 这里直接插入到界面中
-				addText2Pane(pane, new String(bytes));
+				if (pane != null) {
+					addText2Pane(pane, new String(bytes), null);
+				}
 				baos.write(bytes, 0, length);
 				length = in.available();
 			}
 		} catch (IOException e) {
 			return null;
 		}
+
+		// 在显示区打印时间戳便于调试
+		Date now = new Date();
+		if (pane != null) {
+			addText2Pane(pane, sdf.format(now), Color.red);
+		}
+
 		// 返回读取到的数据
-		return new Packet(baos.toByteArray());
+		return new Packet(baos.toByteArray(), now.getTime());
 	}
 
 	/**

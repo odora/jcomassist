@@ -13,6 +13,7 @@ import javax.comm.SerialPort;
 import javax.comm.SerialPortEvent;
 import javax.comm.SerialPortEventListener;
 import javax.swing.*;
+import javax.swing.text.Document;
 
 import com.jgoodies.forms.layout.*;
 
@@ -52,7 +53,8 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 	@Override
 	public void serialEvent(SerialPortEvent event) {
 		if (event.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
-			Packet packet = Objects.readData(inputStream, this.jCtlOutput);
+			JTextPane output = jBtnStopOut.isSelected() ? null : jCtlOutput;
+			Packet packet = Objects.readData(inputStream, output);
 			if (packet != null) {
 				byte[] bytes = packet.getRawData();
 				long timestamp = packet.getTimestamp();
@@ -214,7 +216,7 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 					Objects.errorBox(MainFrame.this, "请选择【保存路径】");
 					return;
 				}
-				if (keyword.isEmpty() || keyword.matches("^[A-Z]+(,[A-Z]+)*$")) {
+				if (keyword.isEmpty() || keyword.matches("^[0-9A-Z]+(,[0-9A-Z]+)*$")) {
 					Objects.errorBox(MainFrame.this, "请填写【关键字】");
 					return;
 				}
@@ -222,6 +224,19 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 				props.put("xmlfile", xmlfile);
 				props.put("keyword", keyword);
 				Objects.saveConfig(props);
+			}
+		});
+
+		// 清除打印区的文本
+		jBtnClearOut.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Document doc = jCtlOutput.getDocument();
+				try {
+					doc.remove(0, doc.getLength());
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
 			}
 		});
 	}
@@ -319,7 +334,7 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 		separator1 = new JSeparator();
 		panel3 = new JPanel();
 		jBtnClearOut = new JButton();
-		jBtnStopOut = new JButton();
+		jBtnStopOut = new JToggleButton();
 		jCtlAutoClear = new JCheckBox();
 		jCtlHexOut = new JCheckBox();
 		panel4 = new JPanel();
@@ -471,7 +486,7 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 	private JSeparator separator1;
 	private JPanel panel3;
 	private JButton jBtnClearOut;
-	private JButton jBtnStopOut;
+	private JToggleButton jBtnStopOut;
 	private JCheckBox jCtlAutoClear;
 	private JCheckBox jCtlHexOut;
 	private JPanel panel4;
