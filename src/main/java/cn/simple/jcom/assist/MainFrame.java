@@ -434,6 +434,7 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 				// ---- jBtnSaveKeyword ----
 				jBtnSaveKeyword.setText("保存关键字");
 				panel5.add(jBtnSaveKeyword, CC.xy(2, 3));
+				jCtlKeyword.setPreferredSize(new Dimension(1, 23));
 				panel5.add(jCtlKeyword, CC.xy(4, 3));
 			}
 			panel1.add(panel5, CC.xy(1, 8));
