@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -47,6 +48,8 @@ public class Objects {
 	public static final ExecutorService pool = Executors.newSingleThreadExecutor();
 	// 这里是线程不安全的对象,但是本例中不需要线程安全。不会产生并发执行的可能
 	private static final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
+	// UTF-8编码
+	public static final Charset gbk = Charset.forName("GBK");
 
 	/**
 	 * 获取本机所有串口
@@ -219,7 +222,7 @@ public class Objects {
 		});
 	}
 
-	public static Packet readData(InputStream in, JTextPane pane) {
+	public static Packet readData(InputStream in, JTextPane pane, boolean showHex) {
 		byte[] bytes = new byte[0];
 		// 收集所有的字节数组
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -232,7 +235,11 @@ public class Objects {
 				in.read(bytes);
 				// 这里直接插入到界面中
 				if (pane != null) {
-					addText2Pane(pane, new String(bytes), null);
+					if (showHex) {
+						addText2Pane(pane, Objects.byte2hex(bytes), null);
+					} else {
+						addText2Pane(pane, Objects.byte2utf(bytes), null);
+					}
 				}
 				baos.write(bytes, 0, length);
 				length = in.available();
@@ -277,7 +284,8 @@ public class Objects {
 	 * @return
 	 */
 	public static Object[] listRates() {
-		return new Object[] { "50", "75", "100", "150", "300", "600", "1200", "2400", "4800", "9600", "19200", "38400" };
+		return new Object[] { "50", "75", "100", "150", "300", "600", "1200", "2400", "4800", "9600", "19200", "38400",
+				"115200" };
 	}
 
 	/**
@@ -424,5 +432,34 @@ public class Objects {
 				}
 			}
 		}
+	}
+
+	/**
+	 * 显示16进制
+	 * 
+	 * @param bytes
+	 * @return
+	 */
+	public static String byte2hex(byte[] bytes) {
+		String strHex = "";
+		if (bytes == null || bytes.length == 0) {
+			return strHex;
+		}
+		StringBuilder sb = new StringBuilder(bytes.length * 2);
+		for (int n = 0; n < bytes.length; n++) {
+			strHex = Integer.toHexString(bytes[n] & 0xFF);
+			sb.append(' ').append((strHex.length() == 1) ? "0" + strHex : strHex);
+		}
+		return sb.substring(1);
+	}
+
+	/**
+	 * 转换成gbk字符串
+	 * 
+	 * @param bytes
+	 * @return
+	 */
+	public static String byte2utf(byte[] bytes) {
+		return new String(bytes, gbk);
 	}
 }

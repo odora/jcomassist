@@ -57,7 +57,8 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 	public void serialEvent(SerialPortEvent event) {
 		if (event.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
 			JTextPane output = jBtnStopOut.isSelected() ? null : jCtlOutput;
-			Packet packet = Objects.readData(inputStream, output);
+			boolean showHex = jCtlHexOut.isSelected();
+			Packet packet = Objects.readData(inputStream, output, showHex);
 			if (packet != null) {
 				byte[] bytes = packet.getRawData();
 				long timestamp = packet.getTimestamp();
@@ -77,7 +78,7 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 				}
 
 				// 将当前字符串加入到缓冲区
-				buffer.append(new String(bytes));
+				buffer.append(Objects.byte2utf(bytes));
 
 				// 这里设置当前获取数据结束时间为上次获取数据的时间戳
 				this.lastTimestamp = timestamp;
@@ -138,6 +139,7 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 		model.setSelectedItem(model.getElementAt(3));
 		jCtlPath.setEnabled(false);// 用文件对话框选择
 		jCtlOutput.setEditable(false);// 只是输出不能编辑
+		jCtlOutput.setFont(new java.awt.Font("宋体", 0, 14));
 
 		// ----------------------------------------
 		// 界面按钮事件监听

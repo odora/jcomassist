@@ -4,21 +4,47 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
  * XML文件的写入类
  */
 public class XmlWriter implements Runnable {
+	private static final Charset utf8 = Charset.forName("utf-8");
 	private File file;
 	private String text;
 	private Pattern keys;
+	private Map<String, Integer> words;
 	private RandomAccessFile raf;
 
 	public XmlWriter(File file, String text, Pattern keys) {
 		this.file = file;
 		this.text = text;
 		this.keys = keys;
+		this.words = words(keys);
+	}
+
+	/**
+	 * 将真个表达式还原成单词
+	 * 
+	 * @param keys
+	 * @return
+	 */
+	private Map<String, Integer> words(Pattern keys) {
+		Map<String, Integer> map = new HashMap<String, Integer>();
+		if (keys != null) {
+			String pattern = keys.pattern();
+			int len = pattern.length();
+			pattern = pattern.substring(3, len - 1);
+			String[] strs = pattern.split("\\|");
+			for (int i = 0; i < strs.length; i++) {
+				map.put(strs[i], i + 1);
+			}
+		}
+		return map;
 	}
 
 	/**
@@ -56,9 +82,12 @@ public class XmlWriter implements Runnable {
 				if (!item.isEmpty() && item.length() > 3) {
 					String key = item.substring(0, 3);
 					String val = item.substring(3);
-					s.append("<").append(key).append(">")
-					.append(val)
-					.append("</").append(key).append(">");
+					Integer index = words.get(key);
+					if (index != null) {
+						s.append("<Field no=\"").append(index).append("\">")
+						.append(val)
+						.append("</Field>");
+					}
 				}
 			}
 			s.append("</LiveData>");
@@ -77,7 +106,7 @@ public class XmlWriter implements Runnable {
 	 */
 	private void writeXmlLine(String text) {
 		try {
-			raf.writeBytes(text);
+			raf.write(text.getBytes(utf8));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -102,15 +131,13 @@ public class XmlWriter implements Runnable {
 				return;
 			}
 
-			// 往回数50个字符用来寻找插入点
-			raf.seek(len - 50);
-			byte[] bytes = new byte[50];
-			raf.readFully(bytes);
-			long seek = new String(bytes).indexOf("</TCSData>");
-			if (seek >= 0) {
-				seek = len - 50 + seek;
+			// 往回数1个字符用来寻找插入点
+			long pos = len;
+			raf.seek(--pos);
+			while (raf.readByte() != '>' && pos > 0) {
+				raf.seek(--pos);
 			}
-			raf.seek(seek);
+			raf.seek(pos - 9);
 
 			// 在插入点写入新数据
 			String str = text2xml();
@@ -118,7 +145,7 @@ public class XmlWriter implements Runnable {
 
 			// 关闭XML文件
 			raf.writeBytes("</TCSData>");
-			raf.setLength(seek + str.length() + 10);
+			// raf.setLength(pos + str.length());
 
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
