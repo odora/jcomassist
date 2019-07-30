@@ -48,8 +48,6 @@ public class Objects {
 	public static final ExecutorService pool = Executors.newSingleThreadExecutor();
 	// 这里是线程不安全的对象,但是本例中不需要线程安全。不会产生并发执行的可能
 	private static final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
-	// UTF-8编码
-	public static final Charset gbk = Charset.forName("GBK");
 
 	/**
 	 * 获取本机所有串口
@@ -222,7 +220,7 @@ public class Objects {
 		});
 	}
 
-	public static Packet readData(InputStream in, JTextPane pane, boolean showHex) {
+	public static Packet readData(InputStream in, JTextPane pane, boolean showHex, Charset charset) {
 		byte[] bytes = new byte[0];
 		// 收集所有的字节数组
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -238,7 +236,7 @@ public class Objects {
 					if (showHex) {
 						addText2Pane(pane, Objects.byte2hex(bytes), null);
 					} else {
-						addText2Pane(pane, Objects.byte2utf(bytes), null);
+						addText2Pane(pane, Objects.byte2utf(bytes, charset), null);
 					}
 				}
 				baos.write(bytes, 0, length);
@@ -453,12 +451,21 @@ public class Objects {
 	}
 
 	/**
-	 * 转换成gbk字符串
+	 * 转换成cp437字符串
 	 * 
 	 * @param bytes
 	 * @return
 	 */
-	public static String byte2utf(byte[] bytes) {
-		return new String(bytes, gbk);
+	public static String byte2utf(byte[] bytes, Charset charset) {
+		return new String(bytes, charset);
+	}
+
+	/**
+	 * 所有可选的数据位
+	 * 
+	 * @return
+	 */
+	public static Object[] listCharset() {
+		return new Object[] { "Cp437", "ISO8859_1", "GBK", "UTF8" };
 	}
 }

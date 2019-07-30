@@ -7,6 +7,7 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.Properties;
 import java.util.regex.Pattern;
 
@@ -39,6 +40,8 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 	private boolean isClosing = false;
 	// 关键字正则表达式
 	private Pattern regex = null;
+	// 字符集选择
+	private Charset charset = Charset.forName("Cp437");
 
 	public MainFrame() {
 		initComponents();
@@ -58,7 +61,7 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 		if (event.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
 			JTextPane output = jBtnStopOut.isSelected() ? null : jCtlOutput;
 			boolean showHex = jCtlHexOut.isSelected();
-			Packet packet = Objects.readData(inputStream, output, showHex);
+			Packet packet = Objects.readData(inputStream, output, showHex, charset);
 			if (packet != null) {
 				byte[] bytes = packet.getRawData();
 				long timestamp = packet.getTimestamp();
@@ -78,7 +81,7 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 				}
 
 				// 将当前字符串加入到缓冲区
-				buffer.append(Objects.byte2utf(bytes));
+				buffer.append(Objects.byte2utf(bytes, charset));
 
 				// 这里设置当前获取数据结束时间为上次获取数据的时间戳
 				this.lastTimestamp = timestamp;
@@ -100,6 +103,7 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 		jCtlSerialPort.setEnabled(enable);
 		jCtlStopBit.setEnabled(enable);
 		jCtlKeyword.setEnabled(enable);
+		jCtlCharset.setEnabled(enable);
 		jBtnChangeDir.setEnabled(enable);
 		jBtnSaveKeyword.setEnabled(enable);
 	}
@@ -137,6 +141,8 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 		model.setSelectedItem(model.getElementAt(9));
 		model = jCtlDigitBit.getModel();// 数据位:5
 		model.setSelectedItem(model.getElementAt(3));
+		model = jCtlCharset.getModel();
+		model.setSelectedItem(model.getElementAt(0));
 		jCtlPath.setEnabled(false);// 用文件对话框选择
 		jCtlOutput.setEditable(false);// 只是输出不能编辑
 		jCtlOutput.setFont(new java.awt.Font("宋体", 0, 14));
@@ -176,10 +182,11 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 						return;
 					}
 					try {
+						charset = Charset.forName((String) jCtlCharset.getSelectedItem());
 						inputStream = sport.getInputStream();
 						Objects.addListener(sport, MainFrame.this);
 						jBtnOpenOrClose.setText("关闭串口");
-						enableInput(true);
+						enableInput(false);
 					} catch (Exception ex) {
 						ex.printStackTrace();
 						sport.close();
@@ -357,6 +364,8 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 		jCtlSaveInterval = new JTextField("100");
 		jBtnSaveKeyword = new JButton();
 		jCtlKeyword = new JTextField();
+		label8 = new JLabel();
+		jCtlCharset = new JComboBox(Objects.listCharset());
 		scrollPane1 = new JScrollPane();
 		jCtlOutput = new JTextPane();
 
@@ -450,7 +459,7 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 			// ======== panel5 ========
 			{
 				panel5.setLayout(new FormLayout("$lcgap, default, $lcgap, default:grow, $lcgap",
-						"default, $lgap, default"));
+						"2*(default, $lgap), default"));
 
 				// ---- label7 ----
 				label7.setText("保存时间");
@@ -462,6 +471,11 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 				panel5.add(jBtnSaveKeyword, CC.xy(2, 3));
 				jCtlKeyword.setPreferredSize(new Dimension(1, 23));
 				panel5.add(jCtlKeyword, CC.xy(4, 3));
+
+				// ---- label8 ----
+				label8.setText("接收字符集");
+				panel5.add(label8, CC.xy(2, 5));
+				panel5.add(jCtlCharset, CC.xy(4, 5));
 			}
 			panel1.add(panel5, CC.xy(1, 8));
 		}
@@ -509,6 +523,8 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 	private JTextField jCtlSaveInterval;
 	private JButton jBtnSaveKeyword;
 	private JTextField jCtlKeyword;
+	private JLabel label8;
+	private JComboBox jCtlCharset;
 	private JScrollPane scrollPane1;
 
 	private JTextPane jCtlOutput;
