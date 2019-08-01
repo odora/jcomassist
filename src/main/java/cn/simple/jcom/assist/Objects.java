@@ -466,6 +466,6 @@ public class Objects {
 	 * @return
 	 */
 	public static Object[] listCharset() {
-		return new Object[] { "Cp437", "ISO8859_1", "GBK", "UTF8" };
+		return new Object[] { "UTF8", "GBK", "ISO8859_1", "Cp437" };
 	}
 }

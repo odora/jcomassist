@@ -75,8 +75,10 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 					System.out.println("insert to xml file now " + timestamp);
 					String path = jCtlPath.getText();
 					if (path != null && !path.isEmpty()) {
-						Objects.saveLine2Xml(path, buffer.toString(), regex);
-						buffer.setLength(0);// 清空缓存下次再写入
+						if (buffer.length() > 0) {
+							Objects.saveLine2Xml(path, buffer.toString(), regex);
+							buffer.setLength(0);// 清空缓存下次再写入
+						}
 					}
 				}
 
@@ -211,11 +213,15 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 		jBtnSaveOut.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				jBtnSaveOut.setEnabled(false);
 				String path = jCtlPath.getText();
 				if (path != null && !path.isEmpty()) {
-					Objects.saveLine2Xml(path, buffer.toString(), regex);
-					buffer.setLength(0);
+					if (buffer.length() > 0) {
+						Objects.saveLine2Xml(path, buffer.toString(), regex);
+						buffer.setLength(0);
+					}
 				}
+				jBtnSaveOut.setEnabled(true);
 			}
 		});
 
