@@ -14,8 +14,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.Map;
 import java.util.Properties;
 import java.util.TooManyListenersException;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
@@ -45,9 +47,11 @@ import javax.swing.text.StyleConstants;
 @SuppressWarnings({ "rawtypes" })
 public class Objects {
 	// 线程池用来进行文件写入操作的互斥
-	public static final ExecutorService pool = Executors.newSingleThreadExecutor();
+	public static final ExecutorService pool = null;//Executors.newSingleThreadExecutor();
 	// 这里是线程不安全的对象,但是本例中不需要线程安全。不会产生并发执行的可能
 	private static final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
+	// 文件的内容的缓存对象
+	public static final Map<String, String> fbuf = new ConcurrentHashMap<String, String>();
 
 	/**
 	 * 获取本机所有串口
@@ -359,7 +363,8 @@ public class Objects {
 	 */
 	public static void saveLine2Xml(String path, String text, Pattern keys) {
 		File file = new File(path, "LiveData.xml");
-		pool.submit(new XmlWriter(file, text, keys));
+		// pool.submit(new XmlWriter2(file, text, keys, fbuf));
+		new XmlWriter2(file, text, keys, fbuf).run();
 	}
 
 	/**

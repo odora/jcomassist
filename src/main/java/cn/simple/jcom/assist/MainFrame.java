@@ -328,7 +328,7 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 			}
 
 			// wait all writer finish
-			Objects.pool.shutdown();
+			// Objects.pool.shutdown();
 			System.exit(0);
 		} else {
 			super.processWindowEvent(pEvent);
