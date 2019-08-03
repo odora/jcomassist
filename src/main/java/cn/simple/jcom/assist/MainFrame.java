@@ -235,7 +235,7 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 					Objects.errorBox(MainFrame.this, "请选择【保存路径】");
 					return;
 				}
-				if (keyword.isEmpty() || keyword.matches("^[0-9A-Z]{3}+(\\|[0-9A-Z]{3})*$")) {
+				if (keyword.isEmpty() || !keyword.matches("^[0-9A-Z]{3}+(\\|[0-9A-Z]{3})*$")) {
 					Objects.errorBox(MainFrame.this, "请填写【关键字】");
 					return;
 				}
