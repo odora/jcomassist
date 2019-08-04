@@ -3,6 +3,7 @@ package cn.simple.jcom.assist;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.UIManager;
@@ -62,7 +63,7 @@ public class App {
 
 		// 解码证书加密块
 		try {
-			code = AESUtils.decrypt(code);
+			code = AESUtils.decryptBase64(code);
 		} catch (Exception e) {
 			return error;
 		}
@@ -74,7 +75,7 @@ public class App {
 		}
 
 		// 证书的有效期间
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		if (inner.getIssuedTime() != null) {
 			try {
 				Date date1 = sdf.parse(inner.getIssuedTime());
@@ -90,7 +91,7 @@ public class App {
 		if (inner.getExpiryTime() != null) {
 			try {
 				Date date2 = sdf.parse(inner.getExpiryTime());
-				if (System.currentTimeMillis() < date2.getTime()) {
+				if (System.currentTimeMillis() > date2.getTime()) {
 					return "证书已经过期";
 				}
 			} catch (Exception e) {
@@ -102,7 +103,8 @@ public class App {
 		String hwerr = "硬件信息与证书不匹配";
 		if (inner.getMacAddress() != null) {
 			try {
-				if (inner.getMacAddress().equals(HWUtils.getMacAddress())) {
+				List<String> addrs = HWUtils.getMacAddress();
+				if (!addrs.isEmpty() && !inner.getMacAddress().equalsIgnoreCase(addrs.get(0))) {
 					return hwerr;
 				}
 			} catch (Exception e) {
@@ -111,7 +113,7 @@ public class App {
 		}
 		if (inner.getCpuSerial() != null) {
 			try {
-				if (inner.getCpuSerial().equals(HWUtils.getCPUSerial())) {
+				if (!inner.getCpuSerial().equalsIgnoreCase(HWUtils.getCPUSerial())) {
 					return hwerr;
 				}
 			} catch (Exception e) {
@@ -120,7 +122,7 @@ public class App {
 		}
 		if (inner.getMainBoardSerial() != null) {
 			try {
-				if (inner.getMainBoardSerial().equals(HWUtils.getMainBoardSerial())) {
+				if (!inner.getMainBoardSerial().equalsIgnoreCase(HWUtils.getMainBoardSerial())) {
 					return hwerr;
 				}
 			} catch (Exception e) {
