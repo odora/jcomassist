@@ -47,7 +47,7 @@ import javax.swing.text.StyleConstants;
 @SuppressWarnings({ "rawtypes" })
 public class Objects {
 	// 线程池用来进行文件写入操作的互斥
-	public static final ExecutorService pool = null;//Executors.newSingleThreadExecutor();
+	public static final ExecutorService pool = Executors.newSingleThreadExecutor();
 	// 这里是线程不安全的对象,但是本例中不需要线程安全。不会产生并发执行的可能
 	private static final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
 	// 文件的内容的缓存对象
@@ -286,7 +286,8 @@ public class Objects {
 	 * @return
 	 */
 	public static Object[] listRates() {
-		return new Object[] { "50", "75", "100", "150", "300", "600", "1200", "2400", "4800", "9600", "19200", "38400", "115200" };
+		return new Object[] { "50", "75", "100", "150", "300", "600", "1200", "2400", "4800", "9600", "19200", "38400",
+				"115200" };
 	}
 
 	/**
@@ -363,8 +364,7 @@ public class Objects {
 	 */
 	public static void saveLine2Xml(String path, String text, Pattern keys) {
 		File file = new File(path, "LiveData.xml");
-		// pool.submit(new XmlWriter2(file, text, keys, fbuf));
-		new XmlWriter2(file, text, keys, fbuf).run();
+		pool.submit(new XmlWriter2(file, text, keys, fbuf));
 	}
 
 	/**
@@ -472,5 +472,36 @@ public class Objects {
 	 */
 	public static Object[] listCharset() {
 		return new Object[] { "UTF8", "GBK", "ISO8859_1", "Cp437" };
+	}
+
+	/**
+	 * 读取文本文件内容
+	 * 
+	 * @param file
+	 * @return
+	 */
+	public static String readFile(File file) {
+		FileInputStream fin = null;
+		if (file == null || !file.exists()) {
+			return null;
+		}
+		try {
+			Charset utf8 = Charset.forName("UTF-8");
+			fin = new FileInputStream(file);
+			int length = (int) file.length();
+			byte[] bytes = new byte[length];
+			int read = fin.read(bytes);
+			if (read == length) {
+				return new String(bytes, utf8);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				fin.close();
+			} catch (Exception e) {
+			}
+		}
+		return null;
 	}
 }

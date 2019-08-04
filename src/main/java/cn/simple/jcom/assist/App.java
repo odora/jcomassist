@@ -1,7 +1,13 @@
 package cn.simple.jcom.assist;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import javax.swing.JFrame;
 import javax.swing.UIManager;
+
+import com.google.gson.Gson;
 
 /**
  * 串口接收工具
@@ -17,6 +23,111 @@ public class App {
 		mainFrame.setTitle("串口接收工具");
 		mainFrame.setSize(800, 600);
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		mainFrame.setVisible(true);
+		String result = checkLicense();
+		if ("ok".equals(result)) {
+			mainFrame.setVisible(true);
+		} else {
+			Objects.errorBox(null, "证书验证失败: " + result);
+			System.exit(0);
+		}
+	}
+
+	/**
+	 * 校验证书
+	 * 
+	 * @return
+	 */
+	private static String checkLicense() {
+		String error = "证书格式错误";
+		String home = System.getProperty("user.home");
+		String work = System.getProperty("user.dir");
+		File file = new File(home, "jcomassist-license.dat");
+		if (!file.exists()) {
+			file = new File(work, "jcomassist-license.dat");
+		}
+		String text = Objects.readFile(file);
+		if (text == null) {
+			return "证书文件不存在";
+		}
+		System.out.println(text);
+		License obj = new Gson().fromJson(text, License.class);
+		if (obj == null) {
+			return error;
+		}
+		String code = obj.getEncryptCode();
+		System.out.println(code);
+		if (code == null || code.isEmpty()) {
+			return error;
+		}
+
+		// 解码证书加密块
+		try {
+			code = AESUtils.decrypt(code);
+		} catch (Exception e) {
+			return error;
+		}
+
+		// 加密块还原
+		License inner = new Gson().fromJson(code, License.class);
+		if (inner == null) {
+			return error;
+		}
+
+		// 证书的有效期间
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		if (inner.getIssuedTime() != null) {
+			try {
+				Date date1 = sdf.parse(inner.getIssuedTime());
+				if (System.currentTimeMillis() < date1.getTime()) {
+					return "不在证书的有效期间内";
+				}
+			} catch (Exception e) {
+				return error;
+			}
+		}
+
+		// 证书的过期时间
+		if (inner.getExpiryTime() != null) {
+			try {
+				Date date2 = sdf.parse(inner.getExpiryTime());
+				if (System.currentTimeMillis() < date2.getTime()) {
+					return "证书已经过期";
+				}
+			} catch (Exception e) {
+				return error;
+			}
+		}
+
+		// 硬件校验(现场部署的场合)
+		String hwerr = "硬件信息与证书不匹配";
+		if (inner.getMacAddress() != null) {
+			try {
+				if (inner.getMacAddress().equals(HWUtils.getMacAddress())) {
+					return hwerr;
+				}
+			} catch (Exception e) {
+				return hwerr;
+			}
+		}
+		if (inner.getCpuSerial() != null) {
+			try {
+				if (inner.getCpuSerial().equals(HWUtils.getCPUSerial())) {
+					return hwerr;
+				}
+			} catch (Exception e) {
+				return hwerr;
+			}
+		}
+		if (inner.getMainBoardSerial() != null) {
+			try {
+				if (inner.getMainBoardSerial().equals(HWUtils.getMainBoardSerial())) {
+					return hwerr;
+				}
+			} catch (Exception e) {
+				return hwerr;
+			}
+		}
+
+		return "ok";
 	}
 }

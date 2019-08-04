@@ -1,8 +1,8 @@
 package cn.simple.jcom.assist;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -93,12 +93,12 @@ public class XmlWriter2 implements Runnable {
 		}
 
 		// 写入文件
-		PrintWriter writer = null;
+		FileOutputStream writer = null;
 		try {
 			String str = text2xml();
 			if (str != null && !str.isEmpty()) {
-				writer = new PrintWriter(file, utf8.name());
-				writer.print(str);
+				writer = new FileOutputStream(file);
+				writer.write(str.getBytes(utf8));
 				writer.flush();
 			}
 
@@ -106,7 +106,10 @@ public class XmlWriter2 implements Runnable {
 			ioe.printStackTrace();
 		} finally {
 			if (writer != null) {
-				writer.close();
+				try {
+					writer.close();
+				} catch (IOException e) {
+				}
 			}
 		}
 	}

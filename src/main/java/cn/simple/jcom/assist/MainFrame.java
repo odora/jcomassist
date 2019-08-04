@@ -33,15 +33,15 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 	// 打开的串口的输入流
 	private InputStream inputStream = null;
 	// 上次收到数据的时间戳
-	private long lastTimestamp = 0;
+//	private long lastTimestamp = 0;
 	// 字符缓冲区内容用于写xml文件
-	private StringBuffer buffer = new StringBuffer(1024);
+	// private StringBuffer buffer = new StringBuffer(1024);
 	// 窗体是否关闭的标志
 	private boolean isClosing = false;
 	// 关键字正则表达式
 	private Pattern regex = null;
 	// 字符集选择
-	private Charset charset = Charset.forName("Cp437");
+	private Charset charset = Charset.forName("UTF-8");
 
 	public MainFrame() {
 		initComponents();
@@ -69,24 +69,11 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 				// ----------------------------------------
 				// 判断是否为1行的结束
 				// ----------------------------------------
-				String delta = jCtlSaveInterval.getText();
-				int interval = delta.isEmpty() ? 100 : Integer.parseInt(delta);
-				if (lastTimestamp != 0 && timestamp - lastTimestamp >= interval) {
-					System.out.println("insert to xml file now " + timestamp);
-					String path = jCtlPath.getText();
-					if (path != null && !path.isEmpty()) {
-						if (buffer.length() > 0) {
-							Objects.saveLine2Xml(path, buffer.toString(), regex);
-							buffer.setLength(0);// 清空缓存下次再写入
-						}
-					}
+				System.out.println("insert to xml file now " + timestamp);
+				String path = jCtlPath.getText();
+				if (path != null && !path.isEmpty()) {
+					Objects.saveLine2Xml(path, new String(bytes, charset), regex);
 				}
-
-				// 将当前字符串加入到缓冲区
-				buffer.append(Objects.byte2utf(bytes, charset));
-
-				// 这里设置当前获取数据结束时间为上次获取数据的时间戳
-				this.lastTimestamp = timestamp;
 			}
 		}
 	}
@@ -213,15 +200,7 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 		jBtnSaveOut.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				jBtnSaveOut.setEnabled(false);
-				String path = jCtlPath.getText();
-				if (path != null && !path.isEmpty()) {
-					if (buffer.length() > 0) {
-						Objects.saveLine2Xml(path, buffer.toString(), regex);
-						buffer.setLength(0);
-					}
-				}
-				jBtnSaveOut.setEnabled(true);
+				System.out.println("do nothing");
 			}
 		});
 
@@ -318,17 +297,8 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 				e.printStackTrace();
 			}
 
-			// 将缓冲区的所有字符都写入文件
-			if (buffer.length() > 0) {
-				String path = jCtlPath.getText();
-				if (path != null && !path.isEmpty()) {
-					Objects.saveLine2Xml(path, buffer.toString(), regex);
-					buffer.setLength(0);
-				}
-			}
-
 			// wait all writer finish
-			// Objects.pool.shutdown();
+			Objects.pool.shutdown();
 			System.exit(0);
 		} else {
 			super.processWindowEvent(pEvent);
