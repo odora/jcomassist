@@ -96,6 +96,9 @@ public class Objects {
 	 */
 	public static final SerialPort openPort(SerialPortObject obj) {
 		CommPort commPort = null;
+		if (obj == null) {
+			return null;
+		}
 		try {
 			// 通过端口名识别端口
 			CommPortIdentifier portIdentifier = findPort(obj.getPortName());
@@ -397,7 +400,7 @@ public class Objects {
 		}
 
 		// 如果不存在配置文件或者数据不完备则写入默认值
-		if (!file.exists() || !props.contains("xmlfile") || !props.contains("keyword")) {
+		if (!file.exists() || !props.contains("xmlfile") || !props.contains("keyword") || !props.contains("hello")) {
 			String keys = "COV|OVB|OVR|RRQ|RRR|BTN|BTS|FTN|FTS|B1N|B1S|B1B|B2N|B2S|B2B|F1N|F1S|LWK|DLT|DLP";
 			if (!props.contains("xmlfile")) {
 				props.put("xmlfile", path);
@@ -405,6 +408,10 @@ public class Objects {
 			if (!props.contains("keyword")) {
 				// 共20个指标用逗号分隔存储到配置文件
 				props.put("keyword", keys);
+			}
+			if (!props.contains("hello")) {
+				// 问候语
+				props.put("hello", "hello");
 			}
 			saveConfig(props);
 		}
