@@ -20,17 +20,11 @@ public class App {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		MainFrame2 mainFrame = new MainFrame2();
+		MainFrame mainFrame = new MainFrame();
 		mainFrame.setTitle("串口接收工具");
-		mainFrame.setSize(360, 240);
+		mainFrame.setSize(800, 600);
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		String result = checkLicense();
-		if ("ok".equals(result)) {
-			mainFrame.setVisible(true);
-		} else {
-			Objects.errorBox(null, "证书验证失败: " + result);
-			System.exit(0);
-		}
+		mainFrame.setVisible(true);
 	}
 
 	/**
@@ -38,6 +32,7 @@ public class App {
 	 * 
 	 * @return
 	 */
+	@SuppressWarnings("unused")
 	private static String checkLicense() {
 		String error = "证书格式错误";
 		String home = System.getProperty("user.home");
