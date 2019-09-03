@@ -329,7 +329,7 @@ public class Objects {
 	 */
 	public static void errorBox(Component root, String text, Object... params) {
 		String msg = params == null || params.length == 0 ? text : String.format(text, params);
-		JOptionPane.showMessageDialog(root, msg, "错误信息", JOptionPane.ERROR_MESSAGE);
+		JOptionPane.showMessageDialog(root, msg, Strings.get("error.info"), JOptionPane.ERROR_MESSAGE);
 	}
 
 	/**
@@ -341,7 +341,7 @@ public class Objects {
 	 */
 	public static void infoBox(Component root, String text, Object... params) {
 		String msg = params == null || params.length == 0 ? text : String.format(text, params);
-		JOptionPane.showMessageDialog(root, msg, "提示信息", JOptionPane.INFORMATION_MESSAGE);
+		JOptionPane.showMessageDialog(root, msg, Strings.get("prompt.info"), JOptionPane.INFORMATION_MESSAGE);
 	}
 
 	/**
@@ -350,7 +350,7 @@ public class Objects {
 	public static String choosePath() {
 		JFileChooser jfc = new JFileChooser();
 		jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		jfc.showDialog(new JLabel(), "选择");
+		jfc.showDialog(new JLabel(), Strings.get("selecting"));
 		File file = jfc.getSelectedFile();
 		if (file != null) {
 			System.out.println(file.getAbsolutePath());

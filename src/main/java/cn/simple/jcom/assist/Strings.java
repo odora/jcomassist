@@ -27,6 +27,25 @@ public class Strings {
 		defaults.put("please.input.keywords", "请填写【关键字】");
 		defaults.put("serial.port", "串口");
 		defaults.put("baud.rate", "波特率");
+		defaults.put("check.bit", "校验位");
+		defaults.put("stop.bit", "停止位");
+		defaults.put("clean.receiving.area", "清空接收区");
+		defaults.put("stop.display", "停止显示");
+		defaults.put("auto.clean", "自动清空");
+		defaults.put("hex.display", "16进制显示");
+		defaults.put("save.current.data", "保存显示数据");
+		defaults.put("set.save.path", "指定保存路径");
+		defaults.put("save.interval", "保存时间");
+		defaults.put("save.keywords", "保存关键字");
+		defaults.put("receiving.charset", "接收字符集");
+		defaults.put("please.input.hello", "请填写【问候语】");
+		defaults.put("keywords", "关键字");
+		defaults.put("hello.words", "问候语");
+		defaults.put("data.path", "数据路径");
+		defaults.put("save.config", "保存配置");
+		defaults.put("selecting", "选择");
+		defaults.put("prompt.info", "提示信息");
+		defaults.put("error.info", "错误信息");
 	}
 
 	public static void load() {
@@ -78,6 +97,9 @@ public class Strings {
 		String val = holder.getProperty(key);
 		if (val == null || val.isEmpty()) {
 			val = defaults.getProperty(key);
+		}
+		if (val == null || val.isEmpty()) {
+			val = key;
 		}
 		return val;
 	}

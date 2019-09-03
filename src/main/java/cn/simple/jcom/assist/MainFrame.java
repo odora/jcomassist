@@ -359,7 +359,7 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 						"6*(default, $lgap), 2*($lgap)"));
 
 				// ---- label1 ----
-				label1.setText("串口");
+				label1.setText(Strings.get("serial.port"));
 				panel2.add(label1, CC.xy(2, 1));
 				panel2.add(jCtlSerialPort, CC.xy(4, 1));
 
@@ -369,17 +369,17 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 				panel2.add(jCtlRate, CC.xy(4, 3));
 
 				// ---- label3 ----
-				label3.setText("校验位");
+				label3.setText(Strings.get("check.bit"));
 				panel2.add(label3, CC.xy(2, 5));
 				panel2.add(jCtlCheckBit, CC.xy(4, 5));
 
 				// ---- label4 ----
-				label4.setText("数据位");
+				label4.setText(Strings.get("data.bit"));
 				panel2.add(label4, CC.xy(2, 7));
 				panel2.add(jCtlDigitBit, CC.xy(4, 7));
 
 				// ---- label5 ----
-				label5.setText("停止位");
+				label5.setText(Strings.get("stop.bit"));
 				panel2.add(label5, CC.xy(2, 9));
 				panel2.add(jCtlStopBit, CC.xy(4, 9));
 
@@ -399,19 +399,19 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 				panel3.setLayout(new FormLayout("2*($lcgap, default), $lcgap", "2*(default, $lgap), default"));
 
 				// ---- jBtnClearOut ----
-				jBtnClearOut.setText("清空接收区");
+				jBtnClearOut.setText(Strings.get("clean.receiving.area"));
 				panel3.add(jBtnClearOut, CC.xy(2, 1));
 
 				// ---- jBtnStopOut ----
-				jBtnStopOut.setText("停止显示");
+				jBtnStopOut.setText(Strings.get("stop.display"));
 				panel3.add(jBtnStopOut, CC.xy(4, 1));
 
 				// ---- jCtlAutoClear ----
-				jCtlAutoClear.setText("自动清空");
+				jCtlAutoClear.setText(Strings.get("auto.clean"));
 				panel3.add(jCtlAutoClear, CC.xywh(2, 3, 3, 1));
 
 				// ---- jCtlHexOut ----
-				jCtlHexOut.setText("16进制显示");
+				jCtlHexOut.setText(Strings.get("hex.display"));
 				panel3.add(jCtlHexOut, CC.xywh(2, 5, 3, 1));
 			}
 			panel1.add(panel3, CC.xy(1, 4));
@@ -422,11 +422,11 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 						"default, $lgap, default"));
 
 				// ---- jBtnSaveOut ----
-				jBtnSaveOut.setText("保存显示数据");
+				jBtnSaveOut.setText(Strings.get("save.current.data"));
 				panel4.add(jBtnSaveOut, CC.xy(2, 1));
 
 				// ---- jBtnChangeDir ----
-				jBtnChangeDir.setText("指定保存路径");
+				jBtnChangeDir.setText(Strings.get("set.save.path"));
 				panel4.add(jBtnChangeDir, CC.xy(4, 1));
 				panel4.add(jCtlPath, CC.xywh(2, 3, 3, 1));
 			}
@@ -438,18 +438,18 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 						"2*(default, $lgap), default"));
 
 				// ---- label7 ----
-				label7.setText("保存时间");
+				label7.setText(Strings.get("save.interval"));
 				panel5.add(label7, CC.xy(2, 1));
 				panel5.add(jCtlSaveInterval, CC.xy(4, 1));
 
 				// ---- jBtnSaveKeyword ----
-				jBtnSaveKeyword.setText("保存关键字");
+				jBtnSaveKeyword.setText(Strings.get("save.keywords"));
 				panel5.add(jBtnSaveKeyword, CC.xy(2, 3));
 				jCtlKeyword.setPreferredSize(new Dimension(1, 23));
 				panel5.add(jCtlKeyword, CC.xy(4, 3));
 
 				// ---- label8 ----
-				label8.setText("接收字符集");
+				label8.setText(Strings.get("receiving.charset"));
 				panel5.add(label8, CC.xy(2, 5));
 				panel5.add(jCtlCharset, CC.xy(4, 5));
 			}

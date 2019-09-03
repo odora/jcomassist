@@ -128,7 +128,7 @@ public class MainFrame2 extends JFrame implements SerialPortEventListener {
 	private boolean checkInput() {
 		String val = jCtlPath.getText();
 		if (val.isEmpty()) {
-			Objects.errorBox(this, "请选择【保存路径】");
+			Objects.errorBox(this, Strings.get("please.select.save.path"));
 			return false;
 		}
 
@@ -167,7 +167,7 @@ public class MainFrame2 extends JFrame implements SerialPortEventListener {
 					}
 					sport.close();
 					sport = null;
-					jBtnOpenOrClose.setText("打开串口");
+					jBtnOpenOrClose.setText(Strings.get("open.serial.port"));
 					success = false;
 					label6.setText("\u25cf");
 					label6.setForeground(Color.black);
@@ -178,14 +178,14 @@ public class MainFrame2 extends JFrame implements SerialPortEventListener {
 					sport = Objects.openPort(makePortParams());
 					String hello = jCtlHello.getText().trim();
 					if (sport == null) {
-						Objects.errorBox(MainFrame2.this, "打开串口失败");
+						Objects.errorBox(MainFrame2.this, Strings.get("failed.to.open.port"));
 						return;
 					}
 					try {
 						inputStream = sport.getInputStream();
 						Objects.sendData(sport, hello.getBytes(charset));
 						Objects.addListener(sport, MainFrame2.this);
-						jBtnOpenOrClose.setText("关闭串口");
+						jBtnOpenOrClose.setText(Strings.get("close.serial.port"));
 						enableInput(false);
 					} catch (Exception ex) {
 						ex.printStackTrace();
@@ -215,15 +215,15 @@ public class MainFrame2 extends JFrame implements SerialPortEventListener {
 				String keyword = jCtlKeyword.getText();
 				String hello = jCtlHello.getText();
 				if (xmlfile.isEmpty() || !new File(xmlfile).exists()) {
-					Objects.errorBox(MainFrame2.this, "请选择【保存路径】");
+					Objects.errorBox(MainFrame2.this, Strings.get("please.select.save.path"));
 					return;
 				}
 				if (keyword.isEmpty() || !keyword.matches("^[0-9A-Za-z]{1,}+(\\|[0-9A-Za-z]{1,})*$")) {
-					Objects.errorBox(MainFrame2.this, "请填写【关键字】");
+					Objects.errorBox(MainFrame2.this, Strings.get("please.input.keywords"));
 					return;
 				}
 				if (hello.isEmpty() || hello.trim().isEmpty()) {
-					Objects.errorBox(MainFrame2.this, "请填写【问候语】");
+					Objects.errorBox(MainFrame2.this, Strings.get("please.input.hello"));
 					return;
 				}
 				Properties props = new Properties();
@@ -342,7 +342,7 @@ public class MainFrame2 extends JFrame implements SerialPortEventListener {
 					"2*(default, $lgap)"));
 
 				//---- label1 ----
-				label1.setText("串口");
+				label1.setText(Strings.get("serial.port"));
 				panel2.add(label1, CC.xy(2, 1));
 				panel2.add(jCtlSerialPort, CC.xy(4, 1));
 
@@ -351,7 +351,7 @@ public class MainFrame2 extends JFrame implements SerialPortEventListener {
 				panel2.add(label6, CC.xy(2, 3));
 
 				//---- jBtnClose ----
-				jBtnOpenOrClose.setText("打开串口");
+				jBtnOpenOrClose.setText(Strings.get("open.serial.port"));
 				panel2.add(jBtnOpenOrClose, CC.xy(4, 3));
 			}
 			panel1.add(panel2, CC.xy(1, 2));
@@ -363,7 +363,7 @@ public class MainFrame2 extends JFrame implements SerialPortEventListener {
 					"4*(default, $lgap)"));
 
 				//---- label2 ----
-				label2.setText("关键字");
+				label2.setText(Strings.get("keywords"));
 				panel5.add(label2, CC.xy(2, 1));
 
 				//---- jCtlKeyword ----
@@ -371,17 +371,17 @@ public class MainFrame2 extends JFrame implements SerialPortEventListener {
 				panel5.add(jCtlKeyword, CC.xy(4, 1));
 
 				//---- label3 ----
-				label3.setText("问候语");
+				label3.setText(Strings.get("hello.words"));
 				panel5.add(label3, CC.xy(2, 3));
 				panel5.add(jCtlHello, CC.xy(4, 3));
 
 				//---- jBtnChangeDir ----
-				jBtnChangeDir.setText("数据路径");
+				jBtnChangeDir.setText(Strings.get("data.path"));
 				panel5.add(jBtnChangeDir, CC.xy(2, 5));
 				panel5.add(jCtlPath, CC.xy(4, 5));
 
 				//---- jBtnSaveKeyword ----
-				jBtnSaveKeyword.setText("保存配置");
+				jBtnSaveKeyword.setText(Strings.get("save.config"));
 				panel5.add(jBtnSaveKeyword, CC.xywh(2, 7, 3, 1));
 			}
 			panel1.add(panel5, CC.xy(1, 4));
