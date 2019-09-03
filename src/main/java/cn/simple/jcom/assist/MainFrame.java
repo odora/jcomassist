@@ -106,15 +106,15 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 		// 检查保存时间
 		String val = jCtlSaveInterval.getText();
 		if (val.isEmpty()) {
-			Objects.errorBox(this, "请输入【保存时间】");
+			Objects.errorBox(this, Strings.get("please.input.save.time"));
 			return false;
 		} else if (!val.matches("^[1-9][0-9]*$")) {
-			Objects.errorBox(this, "【保存时间】必须为数字");
+			Objects.errorBox(this, Strings.get("save.time.must.be.digit"));
 			return false;
 		}
 		val = jCtlPath.getText();
 		if (val.isEmpty()) {
-			Objects.errorBox(this, "请选择【保存路径】");
+			Objects.errorBox(this, Strings.get("please.select.save.path"));
 			return false;
 		}
 
@@ -134,7 +134,7 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 		model.setSelectedItem(model.getElementAt(0));
 		jCtlPath.setEnabled(false);// 用文件对话框选择
 		jCtlOutput.setEditable(false);// 只是输出不能编辑
-		jCtlOutput.setFont(new java.awt.Font("宋体", 0, 14));
+		jCtlOutput.setFont(new java.awt.Font("Asia", 0, 14));
 
 		// ----------------------------------------
 		// 界面按钮事件监听
@@ -160,21 +160,21 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 					}
 					sport.close();
 					sport = null;
-					jBtnOpenOrClose.setText("打开串口");
+					jBtnOpenOrClose.setText(Strings.get("open.serial.port"));
 					enableInput(true);
 				}
 				// 本次是打开
 				else {
 					sport = Objects.openPort(makePortParams());
 					if (sport == null) {
-						Objects.errorBox(MainFrame.this, "打开串口失败");
+						Objects.errorBox(MainFrame.this, Strings.get("failed.to.open.port"));
 						return;
 					}
 					try {
 						charset = Charset.forName((String) jCtlCharset.getSelectedItem());
 						inputStream = sport.getInputStream();
 						Objects.addListener(sport, MainFrame.this);
-						jBtnOpenOrClose.setText("关闭串口");
+						jBtnOpenOrClose.setText(Strings.get("close.serial.port"));
 						enableInput(false);
 					} catch (Exception ex) {
 						ex.printStackTrace();
@@ -211,11 +211,11 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 				String xmlfile = jCtlPath.getText();
 				String keyword = jCtlKeyword.getText();
 				if (xmlfile.isEmpty() || !new File(xmlfile).exists()) {
-					Objects.errorBox(MainFrame.this, "请选择【保存路径】");
+					Objects.errorBox(MainFrame.this, Strings.get("please.select.save.path"));
 					return;
 				}
 				if (keyword.isEmpty() || !keyword.matches("^[0-9A-Za-z]{1,}+(\\|[0-9A-Za-z]{1,})*$")) {
-					Objects.errorBox(MainFrame.this, "请填写【关键字】");
+					Objects.errorBox(MainFrame.this, Strings.get("please.input.keywords"));
 					return;
 				}
 				Properties props = new Properties();
@@ -364,7 +364,7 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 				panel2.add(jCtlSerialPort, CC.xy(4, 1));
 
 				// ---- label2 ----
-				label2.setText("波特率");
+				label2.setText(Strings.get("baud.rate"));
 				panel2.add(label2, CC.xy(2, 3));
 				panel2.add(jCtlRate, CC.xy(4, 3));
 
@@ -388,7 +388,7 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 				panel2.add(label6, CC.xy(2, 11));
 
 				// ---- jBtnClose ----
-				jBtnOpenOrClose.setText("打开串口");
+				jBtnOpenOrClose.setText(Strings.get("open.serial.port"));
 				panel2.add(jBtnOpenOrClose, CC.xy(4, 11));
 				panel2.add(separator1, CC.xywh(2, 13, 3, 1));
 			}
