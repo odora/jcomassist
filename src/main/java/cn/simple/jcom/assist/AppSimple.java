@@ -13,14 +13,15 @@ import com.google.gson.Gson;
 /**
  * 串口接收工具
  */
-public class App1 {
+public class AppSimple {
 	public static void main(String[] args) {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		MainFrame mainFrame = new MainFrame();
+		Strings.load();
+		MainFrame2 mainFrame = new MainFrame2();
 		mainFrame.setTitle("串口接收工具");
 		//mainFrame.setSize(360, 240);
 		mainFrame.setSize(800, 600);

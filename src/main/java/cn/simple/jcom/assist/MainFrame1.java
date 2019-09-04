@@ -27,7 +27,7 @@ import com.jgoodies.forms.layout.*;
  * @author CodeCracker
  */
 @SuppressWarnings({ "serial" })
-public class MainFrame extends JFrame implements SerialPortEventListener {
+public class MainFrame1 extends JFrame implements SerialPortEventListener {
 	// 用户在界面上打开的端口
 	private SerialPort sport = null;
 	// 打开的串口的输入流
@@ -43,7 +43,7 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 	// 字符集选择
 	private Charset charset = Charset.forName("UTF-8");
 
-	public MainFrame() {
+	public MainFrame1() {
 		initComponents();
 		initActions();
 		initConfig();
@@ -167,13 +167,13 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 				else {
 					sport = Objects.openPort(makePortParams());
 					if (sport == null) {
-						Objects.errorBox(MainFrame.this, Strings.get("failed.to.open.port"));
+						Objects.errorBox(MainFrame1.this, Strings.get("failed.to.open.port"));
 						return;
 					}
 					try {
 						charset = Charset.forName((String) jCtlCharset.getSelectedItem());
 						inputStream = sport.getInputStream();
-						Objects.addListener(sport, MainFrame.this);
+						Objects.addListener(sport, MainFrame1.this);
 						jBtnOpenOrClose.setText(Strings.get("close.serial.port"));
 						enableInput(false);
 					} catch (Exception ex) {
@@ -211,11 +211,11 @@ public class MainFrame extends JFrame implements SerialPortEventListener {
 				String xmlfile = jCtlPath.getText();
 				String keyword = jCtlKeyword.getText();
 				if (xmlfile.isEmpty() || !new File(xmlfile).exists()) {
-					Objects.errorBox(MainFrame.this, Strings.get("please.select.save.path"));
+					Objects.errorBox(MainFrame1.this, Strings.get("please.select.save.path"));
 					return;
 				}
 				if (keyword.isEmpty() || !keyword.matches("^[0-9A-Za-z]{1,}+(\\|[0-9A-Za-z]{1,})*$")) {
-					Objects.errorBox(MainFrame.this, Strings.get("please.input.keywords"));
+					Objects.errorBox(MainFrame1.this, Strings.get("please.input.keywords"));
 					return;
 				}
 				Properties props = new Properties();

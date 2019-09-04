@@ -49,7 +49,7 @@ public class Strings {
 	}
 
 	public static void load() {
-		String path = System.getProperty("user.home");
+		String path = System.getProperty("user.dir");
 		File file = new File(path, "_jcomassist.strings");
 		BufferedReader fis = null;
 
