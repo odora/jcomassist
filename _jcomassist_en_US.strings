@@ -27,3 +27,4 @@ please.input.hello=please input hello words
 save.config=save config
 stop.display=stop display
 hello.words=hello words
+serial.port.tool=serial port tool

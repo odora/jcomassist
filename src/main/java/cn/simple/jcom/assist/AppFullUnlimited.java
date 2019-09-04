@@ -13,7 +13,7 @@ import com.google.gson.Gson;
 /**
  * 串口接收工具
  */
-public class AppFull {
+public class AppFullUnlimited {
 	public static void main(String[] args) {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -25,12 +25,7 @@ public class AppFull {
 		mainFrame.setTitle(Strings.get("serial.port.tool"));
 		mainFrame.setSize(800, 600);
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		if ("ok".equals(result)) {
-			mainFrame.setVisible(true);
-		} else {
-			Objects.errorBox(null, "证书验证失败: " + result);
-			System.exit(0);
-		}
+		mainFrame.setVisible(true);
 	}
 
 	/**

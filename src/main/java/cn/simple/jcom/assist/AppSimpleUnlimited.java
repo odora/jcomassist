@@ -13,7 +13,7 @@ import com.google.gson.Gson;
 /**
  * 串口接收工具
  */
-public class AppFull {
+public class AppSimpleUnlimited {
 	public static void main(String[] args) {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -21,16 +21,13 @@ public class AppFull {
 			e.printStackTrace();
 		}
 		Strings.load();
-		MainFrame1 mainFrame = new MainFrame1();
+		MainFrame2 mainFrame = new MainFrame2();
 		mainFrame.setTitle(Strings.get("serial.port.tool"));
-		mainFrame.setSize(800, 600);
+		mainFrame.setSize(360, 240);
+		//mainFrame.setSize(800, 600);
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		if ("ok".equals(result)) {
-			mainFrame.setVisible(true);
-		} else {
-			Objects.errorBox(null, "证书验证失败: " + result);
-			System.exit(0);
-		}
+		String result = checkLicense();
+		mainFrame.setVisible(true);
 	}
 
 	/**
@@ -38,7 +35,6 @@ public class AppFull {
 	 * 
 	 * @return
 	 */
-	@SuppressWarnings("unused")
 	private static String checkLicense() {
 		String error = "证书格式错误";
 		String home = System.getProperty("user.home");
