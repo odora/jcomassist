@@ -46,6 +46,7 @@ public class Strings {
 		defaults.put("selecting", "选择");
 		defaults.put("prompt.info", "提示信息");
 		defaults.put("error.info", "错误信息");
+		defaults.put("serial.port.tool", "串口接收工具");
 	}
 
 	public static void load() {

@@ -22,7 +22,7 @@ public class AppSimple {
 		}
 		Strings.load();
 		MainFrame2 mainFrame = new MainFrame2();
-		mainFrame.setTitle("串口接收工具");
+		mainFrame.setTitle(Strings.get("serial.port.tool"));
 		//mainFrame.setSize(360, 240);
 		mainFrame.setSize(800, 600);
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
